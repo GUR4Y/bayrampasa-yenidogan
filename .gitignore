@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# next.js
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# environment variables
+.env
+.env*.local
+!.env.example
+
+# database (local SQLite)
+prisma/*.db
+prisma/*.db-journal
+prisma/*.db-shm
+prisma/*.db-wal
+
+# logs & debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# os & editor
+.DS_Store
+Thumbs.db
+
+# deployment / test caches
+.vercel
+.netlify/
+coverage/
+

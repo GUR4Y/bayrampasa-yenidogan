@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ClubSettings {
+  id              String   @id @default("default")
+  clubName        String   @default("Bayrampaşa Yenidoğan Spor Kulübü")
+  shortName       String   @default("Bayrampaşa Yenidoğan SK")
+  establishedYear Int      @default(1985)
+  stadiumName     String   @default("Bayrampaşa Belediye Stadı")
+  address         String   @default("Yenidoğan Mah., Bayrampaşa / İstanbul")
+  phone           String   @default("+90 (212) 567 00 00")
+  email           String   @default("info@bayrampasayenidogan.org.tr")
+  instagram       String   @default("https://instagram.com")
+  facebook        String   @default("https://facebook.com")
+  twitter         String   @default("https://twitter.com")
+  youtube         String   @default("https://youtube.com")
+  updatedAt       DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String // hashed password
+  role      String   @default("ADMIN") // ADMIN, EDITOR
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NewsCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  news      News[]
+  createdAt DateTime @default(now())
+}
+
+model News {
+  id           String        @id @default(uuid())
+  title        String
+  slug         String        @unique
+  summary      String
+  content      String
+  imageUrl     String
+  isFeatured   Boolean       @default(false)
+  isPublished  Boolean       @default(true)
+  publishedAt  DateTime      @default(now())
+  categoryId   String?
+  category     NewsCategory? @relation(fields: [categoryId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String   @unique // A Takım, Kadın Futbol Takımı, U-18 vb.
+  slug      String   @unique
+  players   Player[]
+  createdAt DateTime @default(now())
+}
+
+model Player {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  number       Int
+  position     String // Kaleci, Defans, Orta Saha, Forvet
+  teamId       String
+  team         Team     @relation(fields: [teamId], references: [id])
+  photoUrl     String
+  birthYear    Int?
+  nationality  String   @default("Türkiye")
+  matchesPlayed Int     @default(0)
+  goals        Int      @default(0)
+  assists      Int      @default(0)
+  isActive     Boolean  @default(true)
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Staff {
+  id        String   @id @default(uuid())
+  name      String
+  role      String // Teknik Direktör, Antrenör, Kaleci Antrenörü, Masör
+  photoUrl  String?
+  bio       String?
+  createdAt DateTime @default(now())
+}
+
+model Match {
+  id              String   @id @default(uuid())
+  season          String   @default("2025-2026")
+  competition     String   @default("İstanbul Süper Amatör Ligi")
+  week            Int?
+  homeTeam        String
+  homeLogo        String?
+  awayTeam        String
+  awayLogo        String?
+  matchDate       DateTime
+  stadium         String   @default("Bayrampaşa Belediye Stadı")
+  status          String   @default("UPCOMING") // UPCOMING, LIVE, FINISHED, POSTPONED
+  homeScore       Int?
+  awayScore       Int?
+  isHomeMatch     Boolean  @default(true)
+  details         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Standings {
+  id          String   @id @default(uuid())
+  position    Int
+  teamName    String
+  played      Int      @default(0)
+  won         Int      @default(0)
+  drawn       Int      @default(0)
+  lost        Int      @default(0)
+  goalsFor    Int      @default(0)
+  goalsAgainst Int     @default(0)
+  points      Int      @default(0)
+  isClub      Boolean  @default(false)
+  season      String   @default("2025-2026")
+}
+
+model Sponsor {
+  id        String   @id @default(uuid())
+  name      String
+  tier      String   @default("MAIN") // MAIN, SHIRT, OFFICIAL, SUPPORTER
+  logoUrl   String
+  website   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Gallery {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  category    String   @default("Maçlar") // Maçlar, Antrenman, Etkinlik
+  coverUrl    String
+  imageUrls   String   // JSON string of images
+  createdAt   DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  fullName  String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model TffU17Snapshot {
+  id        String   @id @default("2026-2027-u17b-9")
+  payload   String   // JSON string of Snapshot (fixtures & standings)
+  updatedAt DateTime @updatedAt
+}
+
